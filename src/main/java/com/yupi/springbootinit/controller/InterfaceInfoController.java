@@ -2,11 +2,13 @@ package com.yupi.springbootinit.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
 import com.yupi.springbootinit.annotation.AuthCheck;
 import com.yupi.springbootinit.common.*;
 import com.yupi.springbootinit.constant.CommonConstant;
 import com.yupi.springbootinit.exception.BusinessException;
 import com.yupi.springbootinit.model.dto.interfaceInfo.InterfaceInfoAddRequest;
+import com.yupi.springbootinit.model.dto.interfaceInfo.InterfaceInfoInvokeRequest;
 import com.yupi.springbootinit.model.dto.interfaceInfo.InterfaceInfoQueryRequest;
 import com.yupi.springbootinit.model.dto.interfaceInfo.InterfaceInfoUpdateRequest;
 import com.yupi.springbootinit.model.entity.InterfaceInfo;
@@ -266,4 +268,39 @@ public class InterfaceInfoController {
 		boolean result = interfaceInfoService.updateById(interfaceInfo);
 		return ResultUtils.success(result);
 	}
+
+	/**
+	 * 测试调用
+	 *
+	 * @param interfaceInfoInvokeRequest
+	 * @param request
+	 * @return
+	 */
+	@PostMapping("/invoke")
+	public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InterfaceInfoInvokeRequest interfaceInfoInvokeRequest,
+													  HttpServletRequest request) {
+		// 判断账号是否存在
+		if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {
+			throw new BusinessException(ErrorCode.PARAMS_ERROR);
+		}
+		Long id = interfaceInfoInvokeRequest.getId();
+		String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
+		// 判断接口是否存在
+		InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+		if (oldInterfaceInfo == null) {
+			throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+		}
+		if (oldInterfaceInfo.getStatus() != InterfaceInfoStatusEnum.ONLINE.getValue()) {
+			throw new BusinessException(ErrorCode.PARAMS_ERROR, "接口未发布");
+		}
+		User loginUser = userService.getLoginUser(request);
+		String accessKey = loginUser.getAccessKey();
+		String secretKey = loginUser.getSecretKey();
+		YuApiClient tempClient = new YuApiClient(accessKey, secretKey);
+		Gson gson = new Gson();
+		com.yupi.yuapiclientsdk.model.User user = gson.fromJson(userRequestParams, com.yupi.yuapiclientsdk.model.User.class);
+		String userNameByPost = tempClient.getUserNameByPost(user);
+		return ResultUtils.success(userNameByPost);
+	}
+
 }

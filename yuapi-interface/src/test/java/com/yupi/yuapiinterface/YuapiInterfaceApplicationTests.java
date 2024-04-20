@@ -10,17 +10,17 @@ import javax.annotation.Resource;
 @SpringBootTest
 class YuapiInterfaceApplicationTests {
 
-	@Resource
-	private YuApiClient yuApiClient;
+    @Resource
+    private YuApiClient yuApiClient;
 
-	@Test
-	void contextLoads() {
-		String result = yuApiClient.getNameByGet("yupi");
-		User user = new User();
-		user.setUsername("liyupi");
-		String usernameByPost = yuApiClient.getUserNameByPost(user);
-		System.out.println(result);
-		System.out.println(usernameByPost);
-	}
+    @Test
+    void contextLoads() {
+        String result = yuApiClient.getNameByGet("yupi");
+        User user = new User();
+        user.setUsername("liyupi");
+        String usernameByPost = yuApiClient.getUserNameByPost(user);
+        System.out.println(result);
+        System.out.println(usernameByPost);
+    }
 
 }

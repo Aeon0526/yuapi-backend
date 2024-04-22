@@ -20,8 +20,9 @@ import static com.yupi.yuapiclientsdk.utils.SignUtils.genSign;
  */
 public class YuApiClient {
 
-	public String accessKey;
-	public String secretKey;
+	private static final String GATEWAY_URL = "http://localhost:8090";
+	private String accessKey;
+	private String secretKey;
 
 	public YuApiClient(String accessKey, String secretKey) {
 		this.accessKey = accessKey;
@@ -32,7 +33,7 @@ public class YuApiClient {
 		// 可以单独传入http参数，这样参数会自动做URL编码，拼接在URL中
 		HashMap<String, Object> paramMap = new HashMap<>();
 		paramMap.put("name", name);
-		String request = HttpUtil.get("http://localhost:8123/api/name", paramMap);
+		String request = HttpUtil.get(GATEWAY_URL + "/api/name", paramMap);
 		System.out.println(request);
 		return request;
 	}
@@ -41,7 +42,7 @@ public class YuApiClient {
 		// 可以单独传入http参数，这样参数会自动做URL编码，拼接在URL中
 		HashMap<String, Object> paramMap = new HashMap<>();
 		paramMap.put("name", name);
-		String request = HttpUtil.post("http://localhost:8123/api/name", paramMap);
+		String request = HttpUtil.post(GATEWAY_URL + "/api/name", paramMap);
 		System.out.println(request);
 		return request;
 	}
@@ -62,7 +63,7 @@ public class YuApiClient {
 
 	public String getUserNameByPost(User user) {
 		String json = JSONUtil.toJsonStr(user);
-		HttpResponse httpResponse = HttpRequest.post("http://localhost:8123/api/user/name")
+		HttpResponse httpResponse = HttpRequest.post(GATEWAY_URL + "/api/user/name")
 				.charset(StandardCharsets.UTF_8)
 				.addHeaders(getHeaderMap(json))
 				.body(json)

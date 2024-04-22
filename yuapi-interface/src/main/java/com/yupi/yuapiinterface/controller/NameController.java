@@ -12,16 +12,16 @@ import javax.servlet.http.HttpServletRequest;
  * @author Sun
  */
 @RestController
-@RequestMapping("/")
+@RequestMapping("/name")
 public class NameController {
 
-    @GetMapping("/name")
+    @GetMapping("/get")
     public String getNameByGet(String name,HttpServletRequest request) {
 		System.out.println(request.getHeader("dog"));
         return "GET 你的名字是" + name;
     }
 
-    @PostMapping("/")
+    @PostMapping("/post")
     public String getNameByPost(@RequestParam String name) {
         return "POST 你的名字是" + name;
     }
@@ -51,7 +51,7 @@ public class NameController {
         }
 
 		String result = "POST 用户名字是" + user.getUsername();
-		// 调用成功后，次数+1
+		// todo 调用成功后，次数+1
 
 		return result;
     }
